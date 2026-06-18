@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { adminAuth, adminDb } from "@/lib/firebase-admin";
+import { adminDb } from "@/lib/firebase-admin";
 
 export async function POST(request: Request) {
   try {
@@ -10,7 +10,9 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Token is required" }, { status: 400 });
     }
 
-    // Verify the Firebase ID token using the Admin SDK
+    // Verify the Firebase ID token using a dynamic import of the Auth module
+    const { getAuth } = await import("firebase-admin/auth");
+    const adminAuth = getAuth();
     const decodedToken = await adminAuth.verifyIdToken(token);
     const uid = decodedToken.uid;
 
