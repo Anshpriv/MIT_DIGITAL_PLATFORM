@@ -23,7 +23,7 @@ export async function GET(request: Request) {
     const scope = "read:user repo read:org";
     const authUrl = `https://github.com/login/oauth/authorize?client_id=${clientId}&redirect_uri=${encodeURIComponent(
       redirectUri
-    )}&scope=${encodeURIComponent(scope)}&state=${uid}`;
+    )}&scope=${encodeURIComponent(scope)}&state=${uid}&prompt=select_account`;
 
     return NextResponse.redirect(authUrl);
   } catch (error: any) {

@@ -902,6 +902,36 @@ function ProjectsTab({
       {/* Add / Edit Form */}
       <div className="border-t border-border pt-6 space-y-4">
         <h4 className="font-display text-base font-bold">{editingProjId ? "Edit Project" : "Add Project"}</h4>
+        
+        {student.githubConnected && student.githubData?.repos && student.githubData.repos.length > 0 && (
+          <div className="bg-primary/5 border border-primary/20 rounded-lg p-4 space-y-2">
+            <span className="text-xs font-semibold text-primary block">Import Details from GitHub Repository</span>
+            <select
+              onChange={(e) => {
+                const repoName = e.target.value;
+                if (!repoName) return;
+                const repo = student.githubData.repos.find((r: any) => r.name === repoName);
+                if (repo) {
+                  setValue("name", repo.name);
+                  setValue("description", repo.description || "");
+                  setValue("githubUrl", `https://github.com/${student.githubData.username}/${repo.name}`);
+                  setValue("liveUrl", repo.homepage || "");
+                  setValue("techStackString", repo.language || "");
+                }
+              }}
+              defaultValue=""
+              className="w-full rounded-input border border-border bg-bg-surface px-3.5 py-2 text-xs text-text-primary focus:border-primary focus:outline-none"
+            >
+              <option value="" disabled>-- Select a repository to auto-fill --</option>
+              {student.githubData.repos.map((r: any) => (
+                <option key={r.name} value={r.name}>
+                  {r.name} {r.language ? `(${r.language})` : ""}
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
+
         <form onSubmit={handleSubmit(onSubmitForm)} className="space-y-4">
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="block">
