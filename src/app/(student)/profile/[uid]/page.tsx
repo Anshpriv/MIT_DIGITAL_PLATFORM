@@ -58,22 +58,22 @@ export default function PublicProfilePage({ params }: Props) {
     if (!uid) return;
     const logView = async () => {
       try {
-        // Generate simple unique view ID
-        const viewId = Math.random().toString(36).substring(2, 15);
         const sessionKey = `view_sess_${uid}`;
-        
         let sessionId = sessionStorage.getItem(sessionKey);
         if (!sessionId) {
           sessionId = Math.random().toString(36).substring(2, 15);
           sessionStorage.setItem(sessionKey, sessionId);
         }
 
-        const viewRef = doc(db, "students", uid, "profileViews", viewId);
-        await setDoc(viewRef, {
-          timestamp: new Date().toISOString(),
-          viewerUid: user ? user.uid : null,
-          isRecruiter: role === "recruiter",
-          sessionId,
+        await fetch("/api/analytics/track-view", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            profileUid: uid,
+            viewerUid: user ? user.uid : null,
+            isRecruiter: role === "recruiter",
+            sessionId,
+          }),
         });
       } catch (err) {
         console.error("Failed to log profile view telemetry", err);
@@ -81,6 +81,20 @@ export default function PublicProfilePage({ params }: Props) {
     };
     logView();
   }, [uid, user, role]);
+
+  // Track engagement events (clicks, downloads, etc.)
+  const trackEngagement = (type: string, metadata: Record<string, any> = {}) => {
+    fetch("/api/analytics/track-event", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        studentUid: uid,
+        type,
+        viewerUid: user ? user.uid : null,
+        metadata,
+      }),
+    }).catch((err) => console.error("Engagement tracking failed", err));
+  };
 
   if (loading) {
     return (
@@ -131,12 +145,24 @@ export default function PublicProfilePage({ params }: Props) {
               </p>
               <div className="flex flex-wrap gap-4 pt-3 text-text-secondary">
                 {student.githubUrl && (
-                  <a href={student.githubUrl} target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">
+                  <a
+                    href={student.githubUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={() => trackEngagement("github_click")}
+                    className="hover:text-primary transition-colors"
+                  >
                     <Github className="h-5 w-5" />
                   </a>
                 )}
                 {student.linkedinUrl && (
-                  <a href={student.linkedinUrl} target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">
+                  <a
+                    href={student.linkedinUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={() => trackEngagement("linkedin_click")}
+                    className="hover:text-primary transition-colors"
+                  >
                     <Linkedin className="h-5 w-5" />
                   </a>
                 )}
@@ -157,6 +183,7 @@ export default function PublicProfilePage({ params }: Props) {
               href={student.resumeUrl}
               target="_blank"
               rel="noopener noreferrer"
+              onClick={() => trackEngagement("resume_download")}
               className="inline-flex items-center gap-2 rounded-button bg-primary hover:bg-primary-dark transition-all duration-200 px-5 py-3 text-sm font-bold text-white shadow-[0_4px_20px_rgba(108,99,255,0.25)] shrink-0"
             >
               <FileDown className="h-4 w-4" /> Download Resume
@@ -275,7 +302,8 @@ export default function PublicProfilePage({ params }: Props) {
                 {student.projects.map((proj) => (
                   <div
                     key={proj.id}
-                    className="rounded-card border border-border bg-bg-surface p-5 flex flex-col justify-between hover:border-primary/30 transition-colors"
+                    onClick={() => trackEngagement("project_click", { projectId: proj.id, projectName: proj.name })}
+                    className="rounded-card border border-border bg-bg-surface p-5 flex flex-col justify-between hover:border-primary/30 transition-colors cursor-pointer"
                   >
                     <div>
                       {proj.thumbnailUrl && (
@@ -305,14 +333,26 @@ export default function PublicProfilePage({ params }: Props) {
                           </span>
                         ))}
                       </div>
-                      <div className="flex gap-3 text-text-secondary">
+                      <div className="flex gap-3 text-text-secondary" onClick={(e) => e.stopPropagation()}>
                         {proj.githubUrl && (
-                          <a href={proj.githubUrl} target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">
+                          <a
+                            href={proj.githubUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            onClick={() => trackEngagement("github_click", { projectId: proj.id, projectName: proj.name })}
+                            className="hover:text-primary transition-colors"
+                          >
                             <Github className="h-4.5 w-4.5" />
                           </a>
                         )}
                         {proj.liveUrl && (
-                          <a href={proj.liveUrl} target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">
+                          <a
+                            href={proj.liveUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            onClick={() => trackEngagement("project_click", { projectId: proj.id, projectName: proj.name })}
+                            className="hover:text-primary transition-colors"
+                          >
                             <ExternalLink className="h-4.5 w-4.5" />
                           </a>
                         )}

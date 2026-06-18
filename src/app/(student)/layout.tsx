@@ -35,7 +35,7 @@ export default function StudentLayout({ children }: { children: React.ReactNode 
     { name: "GitHub Analytics", href: "/dashboard/github", icon: Github },
     { name: "Portfolio Score", href: "/portfolio-score", icon: GitBranch },
     { name: "Timeline", href: "/timeline", icon: CalendarDays },
-    { name: "Analytics", href: "/dashboard/analytics", icon: LineChart },
+    { name: "Analytics", href: "/analytics", icon: LineChart },
     { name: "Settings", href: "/dashboard/settings", icon: Settings },
   ];
 

@@ -143,6 +143,17 @@ export default function CandidateSearchPage() {
           bookmarkedAt: new Date().toISOString(),
         });
         updated.add(studentId);
+        
+        // Track recruiter_save engagement event
+        fetch("/api/analytics/track-event", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            studentUid: studentId,
+            type: "recruiter_save",
+            viewerUid: user.uid,
+          }),
+        }).catch((err) => console.error("Failed to track recruiter save event:", err));
       }
       setBookmarkedIds(updated);
     } catch (e) {
