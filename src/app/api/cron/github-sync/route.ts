@@ -57,8 +57,8 @@ async function handleSync(request: Request) {
         const accessToken = decrypt(encryptedToken);
         const githubData = await fetchGitHubUserData(accessToken);
 
-        // Update Firestore document with updated metrics
-        await adminDb.collection("students").doc(studentId).update({
+        const updatedStudentData = {
+          ...data,
           githubData: {
             username: githubData.username,
             repoCount: githubData.repoCount,
@@ -72,7 +72,16 @@ async function handleSync(request: Request) {
             lastSyncedAt: githubData.lastSyncedAt,
             contributionCalendar: githubData.contributionCalendar,
             repos: githubData.repos,
-          },
+          }
+        };
+
+        const { calculatePortfolioHealthScore } = await import("@/lib/portfolio-score");
+        const healthScoreResult = calculatePortfolioHealthScore(updatedStudentData as any);
+
+        // Update Firestore document with updated metrics
+        await adminDb.collection("students").doc(studentId).update({
+          githubData: updatedStudentData.githubData,
+          portfolioHealthScore: healthScoreResult,
           updatedAt: new Date().toISOString(),
         });
 

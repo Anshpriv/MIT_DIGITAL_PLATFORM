@@ -57,11 +57,17 @@ export async function GET(request: Request) {
       throw new Error("Firebase Admin SDK is not configured in this environment. Unable to write data.");
     }
 
-    // 4. Update the student document in Firestore
-    await adminDb.collection("students").doc(uid).update({
+    // Fetch the existing student document to calculate portfolio health score
+    const studentDoc = await adminDb.collection("students").doc(uid).get();
+    if (!studentDoc.exists) {
+      throw new Error("Student profile not found in database.");
+    }
+    const studentData = studentDoc.data()!;
+
+    const updatedStudentData = {
+      ...studentData,
       githubConnected: true,
       githubUrl: `https://github.com/${githubData.username}`,
-      githubAccessTokenEncrypted: encryptedToken,
       githubData: {
         username: githubData.username,
         repoCount: githubData.repoCount,
@@ -75,7 +81,19 @@ export async function GET(request: Request) {
         lastSyncedAt: githubData.lastSyncedAt,
         contributionCalendar: githubData.contributionCalendar,
         repos: githubData.repos,
-      },
+      }
+    };
+
+    const { calculatePortfolioHealthScore } = await import("@/lib/portfolio-score");
+    const healthScoreResult = calculatePortfolioHealthScore(updatedStudentData as any);
+
+    // 4. Update the student document in Firestore
+    await adminDb.collection("students").doc(uid).update({
+      githubConnected: true,
+      githubUrl: `https://github.com/${githubData.username}`,
+      githubAccessTokenEncrypted: encryptedToken,
+      githubData: updatedStudentData.githubData,
+      portfolioHealthScore: healthScoreResult,
       updatedAt: new Date().toISOString(),
     });
 

@@ -139,6 +139,21 @@ export interface Student {
   githubData: GitHubStats | null;
   portfolioScore: number | null;
   portfolioAnalysis: PortfolioAnalysis | null;
+  portfolioHealthScore?: {
+    healthScore: number;
+    breakdown: {
+      projectComplexity: number;
+      deploymentAvailability: number;
+      githubIntegration: number;
+      contentQuality: number;
+      achievementsAdded: number;
+      technicalDiversity: number;
+      profileCompleteness: number;
+      impactStatements: number;
+      hasResume: number;
+      hasLinkedIn: number;
+    };
+  } | null;
   achievements: Achievement[];
   hackathons: HackathonEntry[];
   certifications: Certification[];
@@ -147,6 +162,7 @@ export interface Student {
   updatedAt: string;
   isProfilePublic: boolean;
   role: "student";
+  lastAnalyzedAt?: string | null;
 }
 
 export interface Recruiter {
