@@ -1,0 +1,75 @@
+@import "tailwindcss";
+
+@theme {
+  --color-primary: #6C63FF;
+  --color-primary-dark: #4B44CC;
+  --color-accent: #00D4AA;
+  --color-accent-warm: #FF6B6B;
+  --color-bg-base: #0A0A0F;
+  --color-bg-surface: #12121A;
+  --color-bg-elevated: #1A1A28;
+  --color-border: #2A2A3D;
+  --color-text-primary: #F0F0FF;
+  --color-text-secondary: #8888AA;
+  --color-text-disabled: #44445A;
+
+  --font-display: var(--font-display);
+  --font-sans: var(--font-sans);
+  --font-mono: var(--font-mono);
+
+  --radius-card: 12px;
+  --radius-button: 8px;
+  --radius-badge: 6px;
+  --radius-input: 8px;
+}
+
+:root {
+  --background: #0A0A0F;
+  --foreground: #F0F0FF;
+  --card: #12121A;
+  --card-foreground: #F0F0FF;
+  --popover: #12121A;
+  --popover-foreground: #F0F0FF;
+  --primary: #6C63FF;
+  --primary-foreground: #F0F0FF;
+  --secondary: #1A1A28;
+  --secondary-foreground: #F0F0FF;
+  --muted: #1A1A28;
+  --muted-foreground: #8888AA;
+  --accent: #00D4AA;
+  --accent-foreground: #0A0A0F;
+  --destructive: #FF6B6B;
+  --destructive-foreground: #F0F0FF;
+  --border: #2A2A3D;
+  --input: #2A2A3D;
+  --ring: #6C63FF;
+}
+
+/* Force dark class as the default scheme since the project is dark-first */
+.dark, :root {
+  --background: #0A0A0F;
+  --foreground: #F0F0FF;
+  --card: #12121A;
+  --card-foreground: #F0F0FF;
+  --popover: #12121A;
+  --popover-foreground: #F0F0FF;
+  --primary: #6C63FF;
+  --primary-foreground: #F0F0FF;
+  --secondary: #1A1A28;
+  --secondary-foreground: #F0F0FF;
+  --muted: #1A1A28;
+  --muted-foreground: #8888AA;
+  --accent: #00D4AA;
+  --accent-foreground: #0A0A0F;
+  --destructive: #FF6B6B;
+  --destructive-foreground: #F0F0FF;
+  --border: #2A2A3D;
+  --input: #2A2A3D;
+  --ring: #6C63FF;
+}
+
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans);
+}
