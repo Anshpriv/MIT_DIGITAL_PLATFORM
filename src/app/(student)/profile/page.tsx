@@ -46,6 +46,15 @@ const basicInfoSchema = z.object({
 
 type BasicInfoData = z.infer<typeof basicInfoSchema>;
 
+// Background narrative update trigger (fire-and-forget)
+const triggerTimelineNarrativeAutoUpdate = (uid: string) => {
+  fetch("/api/timeline/generate-narrative", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ studentUid: uid }),
+  }).catch((err) => console.warn("Background timeline narrative generation failed:", err));
+};
+
 export default function StudentProfileEdit() {
   const { studentProfile, refresh } = useAuth();
   const searchParams = useSearchParams();
@@ -773,6 +782,7 @@ function ProjectsTab({
       });
       setSaveStatus("saved");
       await refresh();
+      triggerTimelineNarrativeAutoUpdate(student.uid);
     } catch (err) {
       console.error(err);
       setSaveStatus("error");
@@ -1052,6 +1062,7 @@ function AchievementsTab({
       });
       setSaveStatus("saved");
       await refresh();
+      triggerTimelineNarrativeAutoUpdate(student.uid);
     } catch (err) {
       console.error(err);
       setSaveStatus("error");
@@ -1294,6 +1305,7 @@ function CertificationsTab({
       });
       setSaveStatus("saved");
       await refresh();
+      triggerTimelineNarrativeAutoUpdate(student.uid);
     } catch (err) {
       console.error(err);
       setSaveStatus("error");
@@ -1519,6 +1531,7 @@ function HackathonsTab({
       });
       setSaveStatus("saved");
       await refresh();
+      triggerTimelineNarrativeAutoUpdate(student.uid);
     } catch (err) {
       console.error(err);
       setSaveStatus("error");

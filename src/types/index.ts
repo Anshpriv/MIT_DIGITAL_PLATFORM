@@ -163,6 +163,7 @@ export interface Student {
   isProfilePublic: boolean;
   role: "student";
   lastAnalyzedAt?: string | null;
+  aiNarrative?: string | null;
 }
 
 export interface Recruiter {
